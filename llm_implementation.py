@@ -38,3 +38,25 @@ tokenizer = AutoTokenizer.from_pretrained(model_id)
 model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype = "auto", device_map = "auto")
 
 print("model added successfully!")
+
+# prompt is a string containing the user query you want the model to answer.
+
+# messages is a list of dictionaries; each dictionary has "role" (string: system/user/assistant)
+# and "content" (string: actual message text) to structure the conversation.
+
+# tokenizer.apply_chat_template(...) converts messages into a formatted text prompt;
+# tokenize=False (bool) returns plain text, and add_generation_prompt=True (bool)
+# adds a cue for the model to generate a response.
+
+# tokenizer([text], return_tensors="pt") converts text into PyTorch tensors ("pt" = PyTorch),
+# and .to(model.device) moves the inputs to the same device (CPU/GPU) as the model.
+
+prompt = "explain what a large language model is to a 3rd year student of aiml in 2 sentences."
+
+messages = [
+    {"role": "system", "content": "you are a helpful ai assistant"},
+    {"role": "user", "content": prompt}
+]
+
+text = tokenizer.apply_chat_template(messages, tokenize = False, add_generation_prompt = True)
+model_inputs = tokenizer([text], return_tensors = "pt").to(model.device)
