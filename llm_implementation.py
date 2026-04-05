@@ -162,3 +162,42 @@ print("ai:", chat_with_safety("how do i hack a wifi password?"))
 
 print("user: i have a bad headache, what medicines should I take?")
 print("ai:", chat_with_safety("i have a bad headache, what medicines should I take?"))
+
+# interactive UI
+
+import ipywidgets as widgets
+from IPython.display import display, clear_output
+
+text_input = widgets.Text(
+    placeholder="type your message here...",
+    layout={"width": "80%"}
+)
+
+send_button = widgets.Button(
+    description="send",
+    button_style="primary"
+)
+
+output_area = widgets.Output(
+    layout={"border": "1px solid grey", "height": "300px", "overflow_y": "scroll"}
+)
+
+def on_send_clicked(b):
+    user_val = text_input.value
+    if not user_val.strip():
+        return
+
+    with output_area:
+        print(f"👨‍🦱 you: {user_val}")
+        text_input.value = ""
+
+        response = chat_with_safety(user_val)
+        print(f"🤖 ai: {response}")
+        print("*" * 35)
+
+send_button.on_click(on_send_clicked)
+text_input.on_submit(on_send_clicked)
+
+print("aiml assistant: case study 1")
+display(output_area)
+display(text_input, send_button)
