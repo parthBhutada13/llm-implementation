@@ -108,3 +108,11 @@ def chat_with_memory(user_input):
     chat_history.append({"role": "assistant", "content": assistant_answer})
 
     return assistant_answer
+
+# test memory with two questions
+
+print("user: my name is parth and i am a 3rd year aiml student.")
+print("ai:", chat_with_memory("user: my name is parth and i am a 3rd year aiml student."))
+
+print("user: what is my name and which year am i in?")
+print("ai:", chat_with_memory("what is my name and which year am i in?"))
