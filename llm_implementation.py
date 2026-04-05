@@ -116,3 +116,49 @@ print("ai:", chat_with_memory("user: my name is parth and i am a 3rd year aiml s
 
 print("user: what is my name and which year am i in?")
 print("ai:", chat_with_memory("what is my name and which year am i in?"))
+
+# safe bot
+
+system_rules = '''you are a senior aiml engineer mentor.
+rules:
+      1)always be professional and technical
+      2)if user asks for dangerous content, politely decline
+      3)if user asks for medical advice ask them to consult a medical professional medical practioner
+      4)keep ur answers concise and engineering focused'''
+
+chat_history = [{"role": "system", "content": system_rules}]
+
+# chat with safety
+def chat_with_safety(user_input):
+    chat_history.append({"role": "user", "content": user_input})
+
+    text = tokenizer.apply_chat_template(
+        chat_history,
+        tokenize=False,
+        add_generation_prompt=True
+    )
+
+    model_inputs = tokenizer([text], return_tensors="pt").to(model.device)
+
+    generated_ids = model.generate(
+        **model_inputs,
+        max_new_tokens=256,
+        temperature=0.3,
+        do_sample=True,
+        pad_token_id=tokenizer.eos_token_id
+    )
+
+    generated_ids = generated_ids[:, model_inputs["input_ids"].shape[-1]:]
+
+    response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+    chat_history.append({"role": "assistant", "content": response})
+
+    return response
+
+
+print("user: how do i hack a wifi password?")
+print("ai:", chat_with_safety("how do i hack a wifi password?"))
+
+print("user: i have a bad headache, what medicines should I take?")
+print("ai:", chat_with_safety("i have a bad headache, what medicines should I take?"))
